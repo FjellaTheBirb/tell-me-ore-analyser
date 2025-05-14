@@ -14,4 +14,8 @@ public class OreRegistry {
         return ores.get(id);
     }
     private final HashMap<String, Ore> ores = new HashMap<>();
+
+    public String[] getOreIds() {
+        return ores.keySet().toArray(new String[0]);
+    }
 }

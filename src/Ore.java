@@ -21,7 +21,7 @@ public class Ore {
     public String getId() {
         return this.id;
     }
-    // set the path of the file containing the ore data
+    /* set the path of the file containing the ore data */
     public boolean setPath(String path) {
         String default_path = System.getProperty("user.home") + "/.minecraft/config/tellme/";
         File file = new File(path);
@@ -35,30 +35,30 @@ public class Ore {
         this.rawDataPath = path;
         return true;
     }
-    // creates the hashmap, key is the y-coordinate and value is the amount of block on that height
+    /* creates the hashmap, key is the y-coordinate and value is the amount of block on that height */
     public void read() {
         if (this.rawDataPath == null) {
             return;
         }
-        HashMap<Integer, Integer> yCoordinatesMap = new HashMap<>(); // creates the hashmap for saving the key and value pairs
+        HashMap<Integer, Integer> yCoordinatesMap = new HashMap<>(); /* creates the hashmap for saving the key and value pairs */
         List<String> lines;
         try {
         lines = Files.readAllLines(Paths.get(rawDataPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }// for saving the lines
+        } /* for saving the lines */
         if (this.id == null) {
             if (lines.size() > 3) {
                 this.id = extractId(lines.get(3));
             }
         }
         for (String line : lines) {
-            int yCoordinate = extractY(line); // saves y coordinate from the current line
+            int yCoordinate = extractY(line); /* saves y coordinate from the current line */
             if (yCoordinate == -1) {
                 continue;
             }
-            int currentCount = yCoordinatesMap.getOrDefault(yCoordinate, 0); // gets existing count from the hash map at current y coordinate
-            yCoordinatesMap.put(yCoordinate, currentCount+1); // increments y coordinate in the hash map at current coordinate (as another block at this coordinate has been found)
+            int currentCount = yCoordinatesMap.getOrDefault(yCoordinate, 0); /* gets existing count from the hash map at current y coordinate */
+            yCoordinatesMap.put(yCoordinate, currentCount+1); /* increments y coordinate in the hash map at current coordinate (as another block at this coordinate has been found) */
         }
         this.genData = yCoordinatesMap;
     }
@@ -76,7 +76,7 @@ public class Ore {
             this.genPercentages.put(i, percentage);
         }
     }
-    // extract the block id from a single line (add later)
+    /* extract the block id from a single line (add later) */
     private String extractId(String line) {
         Pattern p = Pattern.compile("\\|\\s*([^|]+?)\\s*\\|");
         Matcher m = p.matcher(line);
@@ -86,14 +86,14 @@ public class Ore {
         return null;
 
     }
-    // extract the y coordinate from a single line
+    /* extract the y coordinate from a single line */
     private int extractY(String line) {
-        Pattern p = Pattern.compile("y\\s*=\\s*(\\d+)"); // pattern for getting the y coordinate
+        Pattern p = Pattern.compile("y\\s*=\\s*(\\d+)"); /* pattern for getting the y coordinate */
         Matcher m = p.matcher(line);
         if (m.find()) {
-            return Integer.parseInt(m.group(1)); // returns the y coordinate if the pattern is found
+            return Integer.parseInt(m.group(1)); /* returns the y coordinate if the pattern is found */
         }
-        return -1; // if the pattern isn't found, returns -1 (real y coordinate will never be negative)
+        return -1; /* if the pattern isn't found, returns -1 (real y coordinate will never be negative) */
     }
     private String rawDataPath = null;
     private String id = null;
