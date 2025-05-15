@@ -9,12 +9,13 @@ public class ConsoleUI {
         /* ui version if no arguments (args is empty) */
         String input;
         while(true) {
-            input = ConsoleUI.printMenu("add ore", "get ore", "quit", "help");
+            input = ConsoleUI.printMenu("add ore", "get ore", "quit", "help", "generate json");
             switch (input) {
                 case "1" -> ConsoleUI.addOre(oreRegistry);
                 case "2" -> ConsoleUI.getOre(oreRegistry);
                 case "3" -> { return; }
                 case "4" -> ConsoleUI.printHelp();
+                case "5" -> JsonParser.generateJson(oreRegistry);
             }
         }
     }
@@ -113,9 +114,8 @@ public class ConsoleUI {
                 How do get a tell me file (1.12.2)?
                 -----------------------------------
                 1) Install the tell me mod
-                2) Run these two command in Minecraft:
-                /tellme blockstats count all-loaded-chunks
-                /tellme blockstats dump hbm:ore_niter
+                2) Run this command in Minecraft:
+                /tellme locate block dump all-loaded-chunks {ore}
                 3) Get the path of the file or just the filename if using default path (~/.minecraft/tellme/)
                 
                 Important:

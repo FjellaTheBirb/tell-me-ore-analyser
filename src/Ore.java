@@ -2,12 +2,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Ore {
+    final static int maxHeightKey = 256;
+
     public HashMap<Integer, Integer> getGenData() {
         return this.genData;
     }
@@ -17,6 +20,28 @@ public class Ore {
             this.calculatePercentages(this.genData);
         }
         return this.genPercentages;
+    }
+    public int getMinHeight() {
+        return this.minHeight;
+    }
+    public int getMaxHeight() {
+        return this.maxHeight;
+    }
+    public void setMinMaxHeight() {
+        ArrayList<Integer> heights = new ArrayList<>(); /* temporary array list for evaluating min and max height */
+        for (int i = 0; i < maxHeightKey; i++) {
+            int height = this.genData.getOrDefault(i, 0);
+            if (height == 0) {
+                continue;
+            }
+            heights.add(i);
+        }
+        if (heights.isEmpty()) {
+            System.out.println("id: " + this.id);
+        }
+        this.minHeight = heights.getFirst();
+        this.maxHeight = heights.getLast();
+
     }
     public String getId() {
         return this.id;
@@ -66,13 +91,13 @@ public class Ore {
     private void calculatePercentages(HashMap<Integer, Integer> genDataL) {
         double percentage;
         int total_amount = 0;
-        for (int j = 0; j < 256; j++) {
+        for (int j = 0; j < maxHeightKey; j++) {
             total_amount = total_amount + genDataL.getOrDefault(j, 0);
         }
         if (total_amount == 0) {
             return;
         }
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < maxHeightKey; i++) {
             percentage = ((double) genDataL.getOrDefault(i, 0) /total_amount) * 100;
             this.genPercentages.put(i, percentage);
         }
@@ -98,6 +123,8 @@ public class Ore {
     }
     private String rawDataPath = null;
     private String id = null;
+    private int minHeight = 0;
+    private int maxHeight = 0;
     private HashMap<Integer, Integer> genData = null;
     private HashMap<Integer, Double> genPercentages = null;
 }

@@ -7,15 +7,19 @@ public class OreRegistry {
             return false;
         }
         ore.read();
+        if (ore.getId() == null) {
+            System.out.println("Error parsing file '" + path + "'.");
+            return false;
+        }
         ores.put(ore.getId(), ore);
         return true;
     }
     public Ore get(String id) {
         return ores.get(id);
     }
-    private final HashMap<String, Ore> ores = new HashMap<>();
-
     public String[] getOreIds() {
         return ores.keySet().toArray(new String[0]);
     }
+    private final HashMap<String, Ore> ores = new HashMap<>();
+
 }

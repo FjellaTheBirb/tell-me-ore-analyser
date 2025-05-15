@@ -1,6 +1,7 @@
 //TODO
-// save and parse registry in/from file
+// save registry as json(?) file
 // list files in tell me dir (or path)
+// error handling
 // rework ui
 
 public class Main {
