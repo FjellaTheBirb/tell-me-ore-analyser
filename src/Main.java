@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.*;
 
 //TODO
@@ -43,8 +44,8 @@ public class Main {
             String[] argumentSplit = args[runId].split("=");
             switch (i) {
                 case 0 -> { printArgumentsHelp(); return; }
-                case 1 -> { continue; }
-                case 2 -> { continue; }
+                case 1 -> {}
+                case 2 -> addAll(oreRegistry, argumentSplit[1]);
                 case 3 -> { if (!oreRegistry.add(argumentSplit[1])) return; }
                 case 4 -> { if (!argumentSplit[1].equals("percent") && !argumentSplit[1].equals("absolute")) System.out.println("Unrecognised mode '" + argumentSplit[1] + "'. Using default value 'percent'");
                             else mode = argumentSplit[1];
@@ -55,8 +56,8 @@ public class Main {
                     if (mode.equals("percent")) oreData = ore.getGenPercentages();
                     else oreData = ore.getGenData();
                 }
-                case 6 -> { continue; }
-                case 7 -> { continue; }
+                case 6 -> {}
+                case 7 -> {}
             }
         }
         printMap(oreData);
@@ -90,7 +91,7 @@ public class Main {
                 Options:
                 help                                show this message
                 add=</path/to/tellme>               adds an ore entry from the specified tell me file
-                registry=</path/to/registry>        uses a precreated ore registry at the specified path
+                registry=</path/to/registry>        uses an ore registry at the specified path
                 search=</path/to/dir>               tries to parse all files in the specified directory
                 show=<id>                           shows the data from the specified ore (block id)
                 mode=<percent,absolute>             specify the mode for show (default is percent)
@@ -137,6 +138,20 @@ public class Main {
                 
                 Type enter to continue.""");
         sc.nextLine();
+    }
+    static void addAll(OreRegistry oreRegistry, String path) {
+        File dir = new File(path);
+        File[] filesArray = dir.listFiles(File::isFile); /* Add only files, no subdirectories */
+        if (filesArray == null) {
+            return;
+        }
+        for (File file : filesArray) {
+            String filePath = file.getAbsolutePath();
+            if (!oreRegistry.add(filePath)) {
+                System.out.println("Path" + filePath + "not valid.");
+            }
+        }
+
     }
     static void addOre(OreRegistry oreRegistry) {
         String path;
