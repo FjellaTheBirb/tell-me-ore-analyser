@@ -2,7 +2,6 @@ import java.io.File;
 import java.util.*;
 
 //TODO
-// automatically parse files in specific dir
 // list files in tell me dir (or path)
 // rework ui
 // save and parse registry in/from file
@@ -154,19 +153,39 @@ public class Main {
 
     }
     static void addOre(OreRegistry oreRegistry) {
+        while (true) {
+            switch (printMenu("add specific ore from tell me file", "add all tell me files in a specific directory", "quit")) {
+                case "1" -> {
+                    selectPath(oreRegistry);
+                    return;
+                }
+                case "2" -> {
+                    System.out.print("Path of the directory or quit (leave blank for default path): ");
+                    String path = sc.nextLine();
+                    if (path.equals("quit")) return;
+                    if (path.isEmpty()) path = System.getProperty("user.home") + "/.minecraft/config/tellme/";
+                    addAll(oreRegistry, path);
+                    return;
+                }
+                case "3" -> { return; }
+            }
+        }
+    }
+    static void selectPath(OreRegistry oreRegistry) {
         String path;
-        do {
-            System.out.print("path of the tell me file (or quit): ");
+        while (true) {
+            System.out.print("Path of the tell me file or quit: ");
             path = sc.nextLine();
             if (Objects.equals(path, "quit")) {
                 return;
             }
-        } while (!oreRegistry.add(path));
-        System.out.println("Ore successfully added.");
+            if (oreRegistry.add(path)) return;
+            System.out.println("File not found");
+        }
     }
     static Ore selectOre(OreRegistry oreRegistry) {
         while (true) {
-            System.out.print("id of the ore (or quit): ");
+            System.out.print("id of the ore or quit: ");
             String id = sc.nextLine();
             if (id.equals("quit")) return null;
             Ore ore = oreRegistry.get(id);

@@ -45,7 +45,8 @@ public class Ore {
         try {
         lines = Files.readAllLines(Paths.get(rawDataPath));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error reading file");
+            return;
         } /* for saving the lines */
         if (this.id == null) {
             if (lines.size() > 3) {
