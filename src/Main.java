@@ -1,10 +1,23 @@
 import java.util.*;
 
+//TODO
+// automatically parse files in specific dir
+// list files in tell me dir (or path)
+// rework ui
+// save and parse registry in/from file
+
 public class Main {
     static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
         OreRegistry oreRegistry = new OreRegistry();
+
+        if (args.length != 0) {
+            handleArguments(args);
+            return;
+        }
+
+        /* ui version if no arguments (args is empty) */
         String input;
         while(true) {
             input = printMenu("add ore", "get ore", "quit", "help");
@@ -16,6 +29,77 @@ public class Main {
             }
         }
     }
+    static void handleArguments(String[] args) {
+        OreRegistry oreRegistry = new OreRegistry();
+        HashMap<Integer, Integer> runParameter = getRunParameters(args);
+        if (runParameter == null) return;
+        HashMap<Integer, ?> oreData = new HashMap<>();
+        String mode = "percent"; /* mode for option show (percent, absolute) */
+        for (int i = 0; i < 8; i++) {
+            int runId = runParameter.getOrDefault(i, -2);
+            if (runId == -2) {
+                continue;
+            }
+            String[] argumentSplit = args[runId].split("=");
+            switch (i) {
+                case 0 -> { printArgumentsHelp(); return; }
+                case 1 -> { continue; }
+                case 2 -> { continue; }
+                case 3 -> { if (!oreRegistry.add(argumentSplit[1])) return; }
+                case 4 -> { if (!argumentSplit[1].equals("percent") && !argumentSplit[1].equals("absolute")) System.out.println("Unrecognised mode '" + argumentSplit[1] + "'. Using default value 'percent'");
+                            else mode = argumentSplit[1];
+                }
+                case 5 -> {
+                    Ore ore = oreRegistry.get(argumentSplit[1]);
+                    if (ore == null) { System.out.println("Ore not found in ore registry"); return; }
+                    if (mode.equals("percent")) oreData = ore.getGenPercentages();
+                    else oreData = ore.getGenData();
+                }
+                case 6 -> { continue; }
+                case 7 -> { continue; }
+            }
+        }
+        printMap(oreData);
+    }
+
+    private static HashMap<Integer, Integer> getRunParameters(String[] args) {
+        HashMap<Integer, Integer> runParameter = new HashMap<>();
+        for (int i = 0; i< args.length; i++) {
+            String argument = args[i].split("=")[0];
+            switch (argument) {
+                case "help" -> runParameter.put(0, i);
+                case "registry" -> runParameter.put(1, i);
+                case "search" -> runParameter.put(2, i);
+                case "add" -> runParameter.put(3, i);
+                case "mode" -> runParameter.put(4, i);
+                case "show" -> runParameter.put(5, i);
+                case "save" -> runParameter.put(6, i);
+                case "generate" -> runParameter.put(7, i);
+                default -> { System.out.println("unrecognised option '" + argument + "'.\nUse 'help' for more information."); return null; }
+            }
+        }
+        return runParameter;
+    }
+
+    private static void printArgumentsHelp() {
+        System.out.println("""
+                This program parses tell me files and calculates ore distribution.
+                
+                Usage: java -jar ore-analyser.jar [options]
+                
+                Options:
+                help                                show this message
+                add=</path/to/tellme>               adds an ore entry from the specified tell me file
+                registry=</path/to/registry>        uses a precreated ore registry at the specified path
+                search=</path/to/dir>               tries to parse all files in the specified directory
+                show=<id>                           shows the data from the specified ore (block id)
+                mode=<percent,absolute>             specify the mode for show (default is percent)
+                generate=</path/to/target/file>     generates json file for jre at the specified path
+                save=</path/to/target/file>         saves the ore registry at the specified path
+                
+                Important: use /home/{user} instead of '~' when specifying path""");
+    }
+
     static String printMenu(String ... options) {
         String input;
         for (int i = 0; i < options.length; i++) {
@@ -54,7 +138,6 @@ public class Main {
                 Type enter to continue.""");
         sc.nextLine();
     }
-
     static void addOre(OreRegistry oreRegistry) {
         String path;
         do {
